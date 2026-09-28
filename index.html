@@ -1,0 +1,2881 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Quiz interativo sobre Inteligência Artificial">
+    <meta name="theme-color" content="#0b1020">
+
+    <title>AI Master Quiz</title>
+
+    <style>
+
+        /* =========================
+           VARIÁVEIS
+        ========================= */
+
+        :root {
+            --background: #070b16;
+            --background-2: #0d1326;
+            --card: rgba(17, 24, 45, 0.94);
+            --card-2: #151d35;
+
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --secondary: #a855f7;
+
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.18);
+
+            --shadow: 0 25px 80px rgba(0, 0, 0, .45);
+        }
+
+        body.light {
+            --background: #eef2ff;
+            --background-2: #e0e7ff;
+            --card: rgba(255, 255, 255, .96);
+            --card-2: #f8fafc;
+
+            --text: #111827;
+            --muted: #64748b;
+            --border: rgba(15, 23, 42, .12);
+
+            --shadow: 0 25px 60px rgba(15, 23, 42, .15);
+        }
+
+
+        /* =========================
+           RESET
+        ========================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            color: var(--text);
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(99, 102, 241, .25),
+                    transparent 30%
+                ),
+
+                radial-gradient(
+                    circle at 90% 90%,
+                    rgba(168, 85, 247, .22),
+                    transparent 30%
+                ),
+
+                linear-gradient(
+                    135deg,
+                    var(--background),
+                    var(--background-2)
+                );
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 25px;
+
+            transition:
+                background .3s,
+                color .3s;
+        }
+
+
+        /* =========================
+           BOTÃO DE TEMA
+        ========================= */
+
+        .theme-toggle {
+            position: fixed;
+
+            top: 20px;
+            right: 20px;
+
+            width: 46px;
+            height: 46px;
+
+            border-radius: 50%;
+
+            border: 1px solid var(--border);
+
+            background: var(--card);
+
+            color: var(--text);
+
+            cursor: pointer;
+
+            font-size: 20px;
+
+            z-index: 100;
+
+            box-shadow: var(--shadow);
+
+            transition: .2s;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(15deg) scale(1.05);
+        }
+
+
+        /* =========================
+           APLICAÇÃO
+        ========================= */
+
+        .app {
+            width: 100%;
+            max-width: 950px;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .brand {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .brand-icon {
+            font-size: 55px;
+            margin-bottom: 8px;
+
+            animation:
+                floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .brand h1 {
+            font-size: 42px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #818cf8,
+                    #c084fc
+                );
+
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .brand p {
+            color: var(--muted);
+            margin-top: 8px;
+        }
+
+
+        /* =========================
+           CARD
+        ========================= */
+
+        .card {
+            background: var(--card);
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 25px;
+
+            padding: 35px;
+
+            box-shadow: var(--shadow);
+
+            backdrop-filter: blur(15px);
+
+            transition:
+                background .3s;
+        }
+
+
+        /* =========================
+           TELAS
+        ========================= */
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+
+            animation:
+                fadeIn .35s ease;
+        }
+
+        @keyframes fadeIn {
+
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+        /* =========================
+           TELA INICIAL
+        ========================= */
+
+        .welcome {
+            text-align: center;
+        }
+
+        .welcome h2 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-text {
+            max-width: 650px;
+
+            margin:
+                0 auto 30px;
+
+            color: var(--muted);
+
+            line-height: 1.7;
+        }
+
+        .feature-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 12px;
+
+            margin-bottom: 30px;
+        }
+
+        .feature {
+            background: var(--card-2);
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 15px;
+
+            padding: 18px 10px;
+        }
+
+        .feature-icon {
+            font-size: 27px;
+            margin-bottom: 7px;
+        }
+
+        .feature span {
+            display: block;
+
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+
+        /* =========================
+           FORMULÁRIO
+        ========================= */
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 18px;
+
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+
+            font-weight: bold;
+
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+
+            padding: 14px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 12px;
+
+            background: var(--card-2);
+
+            color: var(--text);
+
+            outline: none;
+
+            font-size: 15px;
+        }
+
+        input:focus,
+        select:focus {
+            border-color:
+                var(--primary);
+        }
+
+
+        /* =========================
+           BOTÕES
+        ========================= */
+
+        .button {
+            width: 100%;
+
+            padding: 15px 20px;
+
+            border: none;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--primary),
+                    var(--secondary)
+                );
+
+            color: white;
+
+            font-weight: bold;
+
+            font-size: 16px;
+
+            cursor: pointer;
+
+            transition: .2s;
+        }
+
+        .button:hover {
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 12px 30px
+                rgba(99, 102, 241, .3);
+        }
+
+        .button.secondary {
+            background:
+                var(--card-2);
+
+            color:
+                var(--text);
+
+            border:
+                1px solid var(--border);
+        }
+
+
+        /* =========================
+           PAINEL DO QUIZ
+        ========================= */
+
+        .quiz-top {
+            display: grid;
+
+            grid-template-columns:
+                1fr auto auto;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 18px;
+        }
+
+        .question-number {
+            font-weight: bold;
+
+            color:
+                var(--primary-light);
+        }
+
+        .combo {
+            background:
+                rgba(245, 158, 11, .12);
+
+            color:
+                #fbbf24;
+
+            padding:
+                8px 13px;
+
+            border-radius:
+                20px;
+
+            font-size:
+                14px;
+
+            font-weight:
+                bold;
+        }
+
+        .lives {
+            white-space: nowrap;
+        }
+
+
+        /* =========================
+           PROGRESSO
+        ========================= */
+
+        .progress-wrapper {
+            height: 10px;
+
+            background:
+                #1e293b;
+
+            border-radius:
+                20px;
+
+            overflow:
+                hidden;
+
+            margin-bottom:
+                25px;
+        }
+
+        .progress {
+            height: 100%;
+
+            width: 0%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--primary),
+                    var(--secondary)
+                );
+
+            transition:
+                width .4s ease;
+        }
+
+
+        /* =========================
+           TIMER
+        ========================= */
+
+        .timer {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+
+            background:
+                var(--card-2);
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                20px;
+
+            padding:
+                8px 14px;
+
+            font-weight:
+                bold;
+        }
+
+        .timer.warning {
+            color:
+                var(--warning);
+        }
+
+        .timer.danger {
+            color:
+                var(--danger);
+
+            animation:
+                pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+
+            50% {
+                transform: scale(1.06);
+            }
+        }
+
+
+        /* =========================
+           PERGUNTA
+        ========================= */
+
+        .category {
+            display:
+                inline-block;
+
+            padding:
+                6px 12px;
+
+            border-radius:
+                20px;
+
+            background:
+                rgba(99, 102, 241, .14);
+
+            color:
+                #a5b4fc;
+
+            font-size:
+                13px;
+
+            margin-bottom:
+                12px;
+        }
+
+        .question {
+            font-size:
+                25px;
+
+            line-height:
+                1.5;
+
+            margin-bottom:
+                25px;
+        }
+
+
+        /* =========================
+           RESPOSTAS
+        ========================= */
+
+        .answers {
+            display:
+                grid;
+
+            gap:
+                12px;
+        }
+
+        .answer {
+            width:
+                100%;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                13px;
+
+            padding:
+                15px;
+
+            border:
+                2px solid
+                var(--border);
+
+            border-radius:
+                14px;
+
+            background:
+                var(--card-2);
+
+            color:
+                var(--text);
+
+            text-align:
+                left;
+
+            font-size:
+                15px;
+
+            cursor:
+                pointer;
+
+            transition:
+                .2s;
+        }
+
+        .answer:hover:not(:disabled) {
+            border-color:
+                var(--primary-light);
+
+            transform:
+                translateX(5px);
+        }
+
+        .answer-letter {
+            min-width:
+                36px;
+
+            height:
+                36px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border-radius:
+                50%;
+
+            background:
+                #273449;
+
+            font-weight:
+                bold;
+        }
+
+        .answer.correct {
+            border-color:
+                var(--success);
+
+            background:
+                rgba(34, 197, 94, .1);
+        }
+
+        .answer.correct .answer-letter {
+            background:
+                var(--success);
+
+            color:
+                white;
+        }
+
+        .answer.wrong {
+            border-color:
+                var(--danger);
+
+            background:
+                rgba(239, 68, 68, .1);
+        }
+
+        .answer.wrong .answer-letter {
+            background:
+                var(--danger);
+
+            color:
+                white;
+        }
+
+        .answer:disabled {
+            cursor:
+                default;
+        }
+
+
+        /* =========================
+           FEEDBACK
+        ========================= */
+
+        .feedback {
+            display:
+                none;
+
+            margin-top:
+                20px;
+
+            padding:
+                15px;
+
+            border-radius:
+                13px;
+
+            line-height:
+                1.6;
+        }
+
+        .feedback.show {
+            display:
+                block;
+        }
+
+        .feedback.success {
+            background:
+                rgba(34, 197, 94, .1);
+
+            border:
+                1px solid
+                rgba(34, 197, 94, .3);
+
+            color:
+                #86efac;
+        }
+
+        .feedback.error {
+            background:
+                rgba(239, 68, 68, .1);
+
+            border:
+                1px solid
+                rgba(239, 68, 68, .3);
+
+            color:
+                #fca5a5;
+        }
+
+
+        /* =========================
+           RESULTADO
+        ========================= */
+
+        .result {
+            text-align:
+                center;
+        }
+
+        .result-icon {
+            font-size:
+                65px;
+        }
+
+        .result h2 {
+            font-size:
+                32px;
+
+            margin:
+                10px 0;
+        }
+
+        .result-player {
+            color:
+                var(--muted);
+        }
+
+        .score-ring {
+            --percentage: 0%;
+
+            width:
+                180px;
+
+            height:
+                180px;
+
+            margin:
+                25px auto;
+
+            border-radius:
+                50%;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            flex-direction:
+                column;
+
+            background:
+                radial-gradient(
+                    circle,
+                    var(--card) 58%,
+                    transparent 59%
+                ),
+
+                conic-gradient(
+                    var(--primary-light)
+                    var(--percentage),
+
+                    #1e293b
+                    var(--percentage)
+                );
+        }
+
+        .score-ring strong {
+            font-size:
+                38px;
+        }
+
+        .score-ring span {
+            color:
+                var(--muted);
+
+            font-size:
+                13px;
+        }
+
+        .stats {
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap:
+                12px;
+
+            margin-bottom:
+                25px;
+        }
+
+        .stat {
+            background:
+                var(--card-2);
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius:
+                13px;
+
+            padding:
+                15px 8px;
+        }
+
+        .stat strong {
+            display:
+                block;
+
+            font-size:
+                21px;
+
+            margin-bottom:
+                5px;
+        }
+
+        .stat span {
+            color:
+                var(--muted);
+
+            font-size:
+                12px;
+        }
+
+
+        /* =========================
+           CONQUISTA
+        ========================= */
+
+        .achievement {
+            margin:
+                20px 0;
+
+            padding:
+                15px;
+
+            border-radius:
+                14px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(99, 102, 241, .12),
+                    rgba(168, 85, 247, .12)
+                );
+
+            border:
+                1px solid
+                var(--border);
+        }
+
+        .achievement strong {
+            display:
+                block;
+
+            margin-bottom:
+                5px;
+        }
+
+        .achievement span {
+            color:
+                var(--muted);
+
+            font-size:
+                13px;
+        }
+
+
+        /* =========================
+           RANKING
+        ========================= */
+
+        .ranking {
+            margin-top:
+                30px;
+
+            text-align:
+                left;
+        }
+
+        .ranking h3 {
+            margin-bottom:
+                12px;
+        }
+
+        .rank {
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            padding:
+                12px 14px;
+
+            background:
+                var(--card-2);
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius:
+                10px;
+
+            margin-bottom:
+                8px;
+        }
+
+        .rank-score {
+            color:
+                var(--primary-light);
+
+            font-weight:
+                bold;
+        }
+
+
+        /* =========================
+           RODAPÉ
+        ========================= */
+
+        footer {
+            text-align:
+                center;
+
+            color:
+                var(--muted);
+
+            font-size:
+                12px;
+
+            margin-top:
+                20px;
+        }
+
+
+        /* =========================
+           RESPONSIVIDADE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            body {
+                padding:
+                    15px;
+            }
+
+            .card {
+                padding:
+                    22px;
+            }
+
+            .brand h1 {
+                font-size:
+                    32px;
+            }
+
+            .feature-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .form-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .quiz-top {
+                grid-template-columns:
+                    1fr 1fr;
+            }
+
+            .timer {
+                grid-column:
+                    span 2;
+            }
+
+            .question {
+                font-size:
+                    21px;
+            }
+
+            .stats {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <!-- BOTÃO DE TEMA -->
+
+    <button
+        class="theme-toggle"
+        id="themeButton"
+        aria-label="Alterar tema"
+    >
+        🌙
+    </button>
+
+
+    <main class="app">
+
+        <!-- CABEÇALHO -->
+
+        <header class="brand">
+
+            <div class="brand-icon">
+                🤖
+            </div>
+
+            <h1>
+                AI Master Quiz
+            </h1>
+
+            <p>
+                O desafio definitivo de Inteligência Artificial
+            </p>
+
+        </header>
+
+
+        <div class="card">
+
+
+            <!-- =========================
+                 TELA INICIAL
+            ========================= -->
+
+            <section
+                class="screen active welcome"
+                id="startScreen"
+            >
+
+                <h2>
+                    Você conhece realmente IA?
+                </h2>
+
+                <p class="welcome-text">
+                    Teste seus conhecimentos sobre Inteligência Artificial,
+                    Machine Learning, redes neurais, IA generativa e muito mais.
+                    Quanto mais rápido você responder, maior será sua pontuação.
+                </p>
+
+
+                <div class="feature-grid">
+
+                    <div class="feature">
+                        <div class="feature-icon">
+                            🧠
+                        </div>
+
+                        <strong>
+                            15
+                        </strong>
+
+                        <span>
+                            Perguntas
+                        </span>
+                    </div>
+
+
+                    <div class="feature">
+                        <div class="feature-icon">
+                            ⏱️
+                        </div>
+
+                        <strong>
+                            20s
+                        </strong>
+
+                        <span>
+                            Por pergunta
+                        </span>
+                    </div>
+
+
+                    <div class="feature">
+                        <div class="feature-icon">
+                            ❤️
+                        </div>
+
+                        <strong>
+                            3
+                        </strong>
+
+                        <span>
+                            Vidas
+                        </span>
+                    </div>
+
+
+                    <div class="feature">
+                        <div class="feature-icon">
+                            🏆
+                        </div>
+
+                        <strong>
+                            Ranking
+                        </strong>
+
+                        <span>
+                            Local
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label for="playerName">
+                            Nome do jogador
+                        </label>
+
+                        <input
+                            type="text"
+                            id="playerName"
+                            maxlength="25"
+                            placeholder="Digite seu nome"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="difficulty">
+                            Dificuldade
+                        </label>
+
+                        <select id="difficulty">
+
+                            <option value="easy">
+                                🟢 Fácil
+                            </option>
+
+                            <option value="medium">
+                                🟡 Médio
+                            </option>
+
+                            <option value="hard">
+                                🔴 Difícil
+                            </option>
+
+                            <option value="mixed">
+                                🟣 Misto
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="button"
+                    id="startButton"
+                >
+                    🚀 Começar desafio
+                </button>
+
+            </section>
+
+
+
+            <!-- =========================
+                 TELA DO QUIZ
+            ========================= -->
+
+            <section
+                class="screen"
+                id="quizScreen"
+            >
+
+                <div class="quiz-top">
+
+                    <div
+                        class="question-number"
+                        id="questionNumber"
+                    >
+                        Pergunta 1 de 15
+                    </div>
+
+
+                    <div
+                        class="combo"
+                        id="combo"
+                    >
+                        🔥 Combo: 0
+                    </div>
+
+
+                    <div
+                        class="lives"
+                        id="lives"
+                    >
+                        ❤️❤️❤️
+                    </div>
+
+
+                    <div
+                        class="timer"
+                        id="timer"
+                    >
+                        ⏱️ 20s
+                    </div>
+
+                </div>
+
+
+                <div class="progress-wrapper">
+
+                    <div
+                        class="progress"
+                        id="progress"
+                    ></div>
+
+                </div>
+
+
+                <div
+                    class="category"
+                    id="category"
+                >
+                    Categoria
+                </div>
+
+
+                <h2
+                    class="question"
+                    id="question"
+                >
+                </h2>
+
+
+                <div
+                    class="answers"
+                    id="answers"
+                >
+                </div>
+
+
+                <div
+                    class="feedback"
+                    id="feedback"
+                >
+                </div>
+
+
+                <button
+                    class="button"
+                    id="nextButton"
+                    style="display:none; margin-top:20px;"
+                >
+                    Próxima pergunta →
+                </button>
+
+            </section>
+
+
+
+            <!-- =========================
+                 RESULTADO
+            ========================= -->
+
+            <section
+                class="screen result"
+                id="resultScreen"
+            >
+
+                <div
+                    class="result-icon"
+                    id="resultIcon"
+                >
+                    🏆
+                </div>
+
+                <h2>
+                    Desafio concluído!
+                </h2>
+
+                <p
+                    class="result-player"
+                    id="resultPlayer"
+                >
+                </p>
+
+
+                <div
+                    class="score-ring"
+                    id="scoreRing"
+                >
+
+                    <strong
+                        id="percentage"
+                    >
+                        0%
+                    </strong>
+
+                    <span>
+                        aproveitamento
+                    </span>
+
+                </div>
+
+
+                <div class="stats">
+
+                    <div class="stat">
+
+                        <strong
+                            id="correct"
+                        >
+                            0
+                        </strong>
+
+                        <span>
+                            Acertos
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat">
+
+                        <strong
+                            id="wrong"
+                        >
+                            0
+                        </strong>
+
+                        <span>
+                            Erros
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat">
+
+                        <strong
+                            id="points"
+                        >
+                            0
+                        </strong>
+
+                        <span>
+                            Pontos
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat">
+
+                        <strong
+                            id="bestCombo"
+                        >
+                            0
+                        </strong>
+
+                        <span>
+                            Melhor combo
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="achievement"
+                    id="achievement"
+                >
+                </div>
+
+
+                <button
+                    class="button"
+                    id="restartButton"
+                >
+                    🔄 Jogar novamente
+                </button>
+
+
+                <div class="ranking">
+
+                    <h3>
+                        🏆 Ranking local
+                    </h3>
+
+                    <div id="rankingList">
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <footer>
+            AI Master Quiz • HTML + CSS + JavaScript
+        </footer>
+
+    </main>
+
+
+
+    <script>
+
+        /* =====================================================
+           BANCO DE PERGUNTAS
+        ===================================================== */
+
+        const questions = [
+
+            {
+                difficulty: "easy",
+                category: "Conceitos básicos",
+                question: "O que significa a sigla IA?",
+                answers: [
+                    "Inteligência Artificial",
+                    "Internet Avançada",
+                    "Informação Automática",
+                    "Integração Algorítmica"
+                ],
+                correct: 0,
+                explanation:
+                    "IA significa Inteligência Artificial, área da computação voltada ao desenvolvimento de sistemas capazes de realizar tarefas associadas à inteligência."
+            },
+
+
+            {
+                difficulty: "easy",
+                category: "Machine Learning",
+                question: "O que é Machine Learning?",
+                answers: [
+                    "Um tipo de monitor",
+                    "Uma área da IA que permite aprender padrões a partir de dados",
+                    "Um sistema operacional",
+                    "Um tipo de memória"
+                ],
+                correct: 1,
+                explanation:
+                    "Machine Learning, ou aprendizado de máquina, utiliza dados para que modelos aprendam padrões e façam previsões ou decisões."
+            },
+
+
+            {
+                difficulty: "easy",
+                category: "Programação",
+                question: "Qual linguagem é muito utilizada em projetos de Inteligência Artificial?",
+                answers: [
+                    "Python",
+                    "HTML",
+                    "CSS",
+                    "XML"
+                ],
+                correct: 0,
+                explanation:
+                    "Python é amplamente utilizada em IA devido ao seu ecossistema de bibliotecas científicas e de aprendizado de máquina."
+            },
+
+
+            {
+                difficulty: "easy",
+                category: "IA Generativa",
+                question: "O que uma IA generativa pode fazer?",
+                answers: [
+                    "Apenas armazenar arquivos",
+                    "Gerar conteúdos como texto, imagens ou áudio",
+                    "Aumentar fisicamente a memória RAM",
+                    "Substituir automaticamente qualquer computador"
+                ],
+                correct: 1,
+                explanation:
+                    "Modelos generativos podem produzir novos conteúdos com base nos padrões aprendidos durante seu treinamento."
+            },
+
+
+            {
+                difficulty: "easy",
+                category: "Algoritmos",
+                question: "O que é um algoritmo?",
+                answers: [
+                    "Uma sequência de instruções para resolver um problema",
+                    "Uma peça de hardware",
+                    "Um tipo de monitor",
+                    "Uma rede social"
+                ],
+                correct: 0,
+                explanation:
+                    "Um algoritmo é uma sequência organizada de passos ou instruções usada para solucionar um problema ou realizar uma tarefa."
+            },
+
+
+            {
+                difficulty: "medium",
+                category: "Redes neurais",
+                question: "O que é uma rede neural artificial?",
+                answers: [
+                    "Uma rede social para robôs",
+                    "Um cabo de internet",
+                    "Um modelo computacional formado por unidades interconectadas",
+                    "Um programa antivírus"
+                ],
+                correct: 2,
+                explanation:
+                    "Redes neurais artificiais são modelos computacionais compostos por unidades interconectadas que transformam informações."
+            },
+
+
+            {
+                difficulty: "medium",
+                category: "Treinamento",
+                question: "Qual é um objetivo do treinamento de um modelo de Machine Learning?",
+                answers: [
+                    "Aumentar fisicamente a memória do computador",
+                    "Ajustar os parâmetros do modelo com base nos dados",
+                    "Trocar o processador",
+                    "Instalar um novo monitor"
+                ],
+                correct: 1,
+                explanation:
+                    "No treinamento, os parâmetros do modelo são ajustados com base nos dados para que ele aprenda relações úteis."
+            },
+
+
+            {
+                difficulty: "medium",
+                category: "Overfitting",
+                question: "O que é overfitting?",
+                answers: [
+                    "Quando o modelo aprende apenas a linguagem Python",
+                    "Quando o modelo se adapta demais aos dados de treinamento",
+                    "Quando o computador fica sem energia",
+                    "Quando o modelo não possui nenhum dado"
+                ],
+                correct: 1,
+                explanation:
+                    "Overfitting acontece quando o modelo se ajusta excessivamente aos dados de treinamento e pode ter dificuldade para generalizar para novos dados."
+            },
+
+
+            {
+                difficulty: "medium",
+                category: "Dados",
+                question: "Por que os dados são importantes para Machine Learning?",
+                answers: [
+                    "Porque modelos aprendem padrões a partir deles",
+                    "Porque substituem o processador",
+                    "Porque aumentam o tamanho da tela",
+                    "Porque eliminam a necessidade de algoritmos"
+                ],
+                correct: 0,
+                explanation:
+                    "Os dados fornecem exemplos e informações usadas para ajustar e avaliar modelos de aprendizado de máquina."
+            },
+
+
+            {
+                difficulty: "medium",
+                category: "Chatbots",
+                question: "O que é um chatbot?",
+                answers: [
+                    "Um sistema capaz de interagir com usuários por texto ou voz",
+                    "Um tipo de placa-mãe",
+                    "Um antivírus",
+                    "Um cabo de rede"
+                ],
+                correct: 0,
+                explanation:
+                    "Chatbots são sistemas desenvolvidos para interagir com pessoas por meio de conversas, geralmente usando texto ou voz."
+            },
+
+
+            {
+                difficulty: "hard",
+                category: "Deep Learning",
+                question: "O que caracteriza uma rede neural profunda?",
+                answers: [
+                    "Uso de apenas uma instrução",
+                    "Uso de múltiplas camadas de processamento",
+                    "Ausência de dados",
+                    "Uso exclusivo de regras manuais"
+                ],
+                correct: 1,
+                explanation:
+                    "Deep Learning utiliza redes neurais com múltiplas camadas capazes de aprender representações hierárquicas dos dados."
+            },
+
+
+            {
+                difficulty: "hard",
+                category: "Transformers",
+                question: "Qual mecanismo é central na arquitetura Transformer?",
+                answers: [
+                    "Self-attention",
+                    "Compactação de arquivos",
+                    "Firewall",
+                    "Renderização 3D"
+                ],
+                correct: 0,
+                explanation:
+                    "A arquitetura Transformer utiliza mecanismos de atenção para relacionar diferentes partes das sequências processadas."
+            },
+
+
+            {
+                difficulty: "hard",
+                category: "Modelos de linguagem",
+                question: "Em um modelo de linguagem, o que significa prever o próximo token?",
+                answers: [
+                    "Estimar qual unidade de texto pode aparecer em seguida",
+                    "Prever a temperatura do processador",
+                    "Escolher uma placa de vídeo",
+                    "Criar automaticamente um sistema operacional"
+                ],
+                correct: 0,
+                explanation:
+                    "Modelos de linguagem calculam probabilidades para possíveis tokens seguintes considerando o contexto disponível."
+            },
+
+
+            {
+                difficulty: "hard",
+                category: "IA Generativa",
+                question: "O que é um modelo multimodal?",
+                answers: [
+                    "Um modelo que pode trabalhar com diferentes tipos de informação",
+                    "Um modelo que possui vários processadores físicos",
+                    "Um antivírus avançado",
+                    "Um sistema exclusivamente de áudio"
+                ],
+                correct: 0,
+                explanation:
+                    "Modelos multimodais podem processar ou relacionar diferentes modalidades, como texto, imagem, áudio ou vídeo."
+            },
+
+
+            {
+                difficulty: "hard",
+                category: "IA responsável",
+                question: "Qual é uma preocupação relevante no desenvolvimento de sistemas de IA?",
+                answers: [
+                    "Privacidade, segurança e possíveis vieses",
+                    "A cor do teclado",
+                    "O tamanho do mouse",
+                    "A quantidade de portas USB"
+                ],
+                correct: 0,
+                explanation:
+                    "Privacidade, segurança, transparência e possíveis vieses estão entre as questões importantes no desenvolvimento responsável de sistemas de IA."
+            }
+
+        ];
+
+
+        /* =====================================================
+           VARIÁVEIS
+        ===================================================== */
+
+        let quizQuestions = [];
+
+        let currentQuestion = 0;
+
+        let score = 0;
+
+        let correctAnswers = 0;
+
+        let wrongAnswers = 0;
+
+        let combo = 0;
+
+        let bestCombo = 0;
+
+        let lives = 3;
+
+        let timeLeft = 20;
+
+        let timerInterval;
+
+        let answered = false;
+
+        let playerName = "Jogador";
+
+
+        /* =====================================================
+           ELEMENTOS
+        ===================================================== */
+
+        const startScreen =
+            document.getElementById("startScreen");
+
+        const quizScreen =
+            document.getElementById("quizScreen");
+
+        const resultScreen =
+            document.getElementById("resultScreen");
+
+        const startButton =
+            document.getElementById("startButton");
+
+        const restartButton =
+            document.getElementById("restartButton");
+
+        const nextButton =
+            document.getElementById("nextButton");
+
+        const questionNumber =
+            document.getElementById("questionNumber");
+
+        const category =
+            document.getElementById("category");
+
+        const question =
+            document.getElementById("question");
+
+        const answers =
+            document.getElementById("answers");
+
+        const progress =
+            document.getElementById("progress");
+
+        const timer =
+            document.getElementById("timer");
+
+        const feedback =
+            document.getElementById("feedback");
+
+        const livesElement =
+            document.getElementById("lives");
+
+        const comboElement =
+            document.getElementById("combo");
+
+
+        /* =====================================================
+           INICIAR
+        ===================================================== */
+
+        startButton.addEventListener(
+            "click",
+            startQuiz
+        );
+
+
+        function startQuiz() {
+
+            playerName =
+                document
+                    .getElementById("playerName")
+                    .value
+                    .trim()
+                || "Jogador";
+
+
+            const difficulty =
+                document
+                    .getElementById("difficulty")
+                    .value;
+
+
+            if (difficulty === "mixed") {
+
+                quizQuestions =
+                    shuffle([...questions]);
+
+            } else {
+
+                quizQuestions =
+                    questions.filter(
+                        item =>
+                            item.difficulty === difficulty
+                    );
+
+                quizQuestions =
+                    shuffle(quizQuestions);
+            }
+
+
+            /*
+                Para manter o desafio equilibrado,
+                usamos no máximo 15 perguntas.
+            */
+
+            quizQuestions =
+                quizQuestions.slice(0, 15);
+
+
+            currentQuestion = 0;
+
+            score = 0;
+
+            correctAnswers = 0;
+
+            wrongAnswers = 0;
+
+            combo = 0;
+
+            bestCombo = 0;
+
+            lives = 3;
+
+
+            startScreen.classList.remove(
+                "active"
+            );
+
+            resultScreen.classList.remove(
+                "active"
+            );
+
+            quizScreen.classList.add(
+                "active"
+            );
+
+
+            updateLives();
+
+            updateCombo();
+
+            loadQuestion();
+        }
+
+
+        /* =====================================================
+           CARREGAR PERGUNTA
+        ===================================================== */
+
+        function loadQuestion() {
+
+            clearInterval(timerInterval);
+
+            answered = false;
+
+            timeLeft = 20;
+
+            feedback.className = "feedback";
+
+            feedback.textContent = "";
+
+            nextButton.style.display = "none";
+
+
+            const item =
+                quizQuestions[currentQuestion];
+
+
+            questionNumber.textContent =
+                `Pergunta ${currentQuestion + 1} de ${quizQuestions.length}`;
+
+
+            progress.style.width =
+                `${((currentQuestion + 1) /
+                    quizQuestions.length) * 100}%`;
+
+
+            category.textContent =
+                item.category;
+
+
+            question.textContent =
+                item.question;
+
+
+            answers.innerHTML = "";
+
+
+            item.answers.forEach(
+                (answer, index) => {
+
+                    const button =
+                        document.createElement("button");
+
+                    button.className =
+                        "answer";
+
+
+                    button.innerHTML = `
+                        <span class="answer-letter">
+                            ${String.fromCharCode(65 + index)}
+                        </span>
+
+                        <span>
+                            ${answer}
+                        </span>
+                    `;
+
+
+                    button.addEventListener(
+                        "click",
+                        () =>
+                            selectAnswer(
+                                index,
+                                button
+                            )
+                    );
+
+
+                    answers.appendChild(
+                        button
+                    );
+                }
+            );
+
+
+            updateTimer();
+
+
+            timerInterval =
+                setInterval(
+                    updateTimer,
+                    1000
+                );
+        }
+
+
+        /* =====================================================
+           CRONÔMETRO
+        ===================================================== */
+
+        function updateTimer() {
+
+            timer.textContent =
+                `⏱️ ${timeLeft}s`;
+
+
+            timer.classList.remove(
+                "warning",
+                "danger"
+            );
+
+
+            if (timeLeft <= 10) {
+
+                timer.classList.add(
+                    "warning"
+                );
+            }
+
+
+            if (timeLeft <= 5) {
+
+                timer.classList.remove(
+                    "warning"
+                );
+
+                timer.classList.add(
+                    "danger"
+                );
+            }
+
+
+            if (timeLeft <= 0) {
+
+                clearInterval(
+                    timerInterval
+                );
+
+
+                if (!answered) {
+
+                    timeOut();
+                }
+
+
+                return;
+            }
+
+
+            timeLeft--;
+        }
+
+
+        /* =====================================================
+           RESPOSTA
+        ===================================================== */
+
+        function selectAnswer(
+            selectedIndex,
+            selectedButton
+        ) {
+
+            if (answered)
+                return;
+
+
+            answered = true;
+
+
+            clearInterval(
+                timerInterval
+            );
+
+
+            const item =
+                quizQuestions[currentQuestion];
+
+
+            const allButtons =
+                document.querySelectorAll(
+                    ".answer"
+                );
+
+
+            allButtons.forEach(
+                (button, index) => {
+
+                    button.disabled = true;
+
+
+                    if (
+                        index === item.correct
+                    ) {
+
+                        button.classList.add(
+                            "correct"
+                        );
+                    }
+                }
+            );
+
+
+            if (
+                selectedIndex ===
+                item.correct
+            ) {
+
+                handleCorrect(
+                    selectedButton,
+                    item
+                );
+
+            } else {
+
+                handleWrong(
+                    selectedButton,
+                    item
+                );
+            }
+
+
+            nextButton.style.display =
+                "block";
+        }
+
+
+        /* =====================================================
+           ACERTO
+        ===================================================== */
+
+        function handleCorrect(
+            button,
+            item
+        ) {
+
+            button.classList.add(
+                "correct"
+            );
+
+
+            correctAnswers++;
+
+
+            combo++;
+
+
+            if (combo > bestCombo) {
+
+                bestCombo = combo;
+            }
+
+
+            /*
+                Sistema de pontuação:
+
+                100 pontos base
+                + tempo restante
+                + bônus do combo
+            */
+
+            const basePoints =
+                100;
+
+            const timeBonus =
+                timeLeft * 5;
+
+            const comboBonus =
+                combo * 10;
+
+
+            const total =
+                basePoints +
+                timeBonus +
+                comboBonus;
+
+
+            score += total;
+
+
+            feedback.textContent =
+                `✅ Muito bem! Você ganhou ${total} pontos. ${item.explanation}`;
+
+
+            feedback.className =
+                "feedback success";
+
+
+            updateCombo();
+        }
+
+
+        /* =====================================================
+           ERRO
+        ===================================================== */
+
+        function handleWrong(
+            button,
+            item
+        ) {
+
+            button.classList.add(
+                "wrong"
+            );
+
+
+            wrongAnswers++;
+
+
+            combo = 0;
+
+
+            lives--;
+
+
+            updateLives();
+
+            updateCombo();
+
+
+            feedback.textContent =
+                `❌ Resposta incorreta. ${item.explanation}`;
+
+
+            feedback.className =
+                "feedback error";
+
+
+            /*
+                Se ficar sem vidas,
+                o quiz termina.
+            */
+
+            if (lives <= 0) {
+
+                feedback.textContent +=
+                    " Você ficou sem vidas.";
+
+                nextButton.textContent =
+                    "Ver resultado →";
+            }
+        }
+
+
+        /* =====================================================
+           TEMPO ESGOTADO
+        ===================================================== */
+
+        function timeOut() {
+
+            answered = true;
+
+
+            wrongAnswers++;
+
+
+            combo = 0;
+
+
+            lives--;
+
+
+            updateLives();
+
+            updateCombo();
+
+
+            const item =
+                quizQuestions[currentQuestion];
+
+
+            const allButtons =
+                document.querySelectorAll(
+                    ".answer"
+                );
+
+
+            allButtons.forEach(
+                (button, index) => {
+
+                    button.disabled = true;
+
+
+                    if (
+                        index === item.correct
+                    ) {
+
+                        button.classList.add(
+                            "correct"
+                        );
+                    }
+                }
+            );
+
+
+            feedback.textContent =
+                `⏰ O tempo acabou! ${item.explanation}`;
+
+
+            feedback.className =
+                "feedback error";
+
+
+            nextButton.style.display =
+                "block";
+
+
+            if (lives <= 0) {
+
+                nextButton.textContent =
+                    "Ver resultado →";
+            }
+        }
+
+
+        /* =====================================================
+           PRÓXIMA
+        ===================================================== */
+
+        nextButton.addEventListener(
+            "click",
+            nextQuestion
+        );
+
+
+        function nextQuestion() {
+
+            if (lives <= 0) {
+
+                finishQuiz();
+
+                return;
+            }
+
+
+            currentQuestion++;
+
+
+            if (
+                currentQuestion >=
+                quizQuestions.length
+            ) {
+
+                finishQuiz();
+
+            } else {
+
+                loadQuestion();
+            }
+        }
+
+
+        /* =====================================================
+           VIDAS
+        ===================================================== */
+
+        function updateLives() {
+
+            let result = "";
+
+            for (
+                let i = 0;
+                i < 3;
+                i++
+            ) {
+
+                if (i < lives) {
+
+                    result += "❤️";
+
+                } else {
+
+                    result += "🖤";
+                }
+            }
+
+
+            livesElement.textContent =
+                result;
+        }
+
+
+        /* =====================================================
+           COMBO
+        ===================================================== */
+
+        function updateCombo() {
+
+            comboElement.textContent =
+                `🔥 Combo: ${combo}`;
+        }
+
+
+        /* =====================================================
+           FINALIZAR
+        ===================================================== */
+
+        function finishQuiz() {
+
+            clearInterval(
+                timerInterval
+            );
+
+
+            quizScreen.classList.remove(
+                "active"
+            );
+
+            resultScreen.classList.add(
+                "active"
+            );
+
+
+            const total =
+                quizQuestions.length;
+
+
+            const percentage =
+                Math.round(
+                    (correctAnswers / total) * 100
+                );
+
+
+            document.getElementById(
+                "percentage"
+            ).textContent =
+                `${percentage}%`;
+
+
+            document.getElementById(
+                "scoreRing"
+            ).style.setProperty(
+                "--percentage",
+                `${percentage}%`
+            );
+
+
+            document.getElementById(
+                "correct"
+            ).textContent =
+                correctAnswers;
+
+
+            document.getElementById(
+                "wrong"
+            ).textContent =
+                wrongAnswers;
+
+
+            document.getElementById(
+                "points"
+            ).textContent =
+                score;
+
+
+            document.getElementById(
+                "bestCombo"
+            ).textContent =
+                bestCombo;
+
+
+            document.getElementById(
+                "resultPlayer"
+            ).textContent =
+                `${playerName}, este foi o seu resultado:`;
+
+
+            createAchievement(
+                percentage
+            );
+
+
+            saveRanking(
+                playerName,
+                score,
+                percentage
+            );
+
+
+            showRanking();
+
+
+            updateResultIcon(
+                percentage
+            );
+        }
+
+
+        /* =====================================================
+           ÍCONE DO RESULTADO
+        ===================================================== */
+
+        function updateResultIcon(
+            percentage
+        ) {
+
+            const icon =
+                document.getElementById(
+                    "resultIcon"
+                );
+
+
+            if (percentage === 100) {
+
+                icon.textContent =
+                    "🏆";
+
+            } else if (
+                percentage >= 80
+            ) {
+
+                icon.textContent =
+                    "🚀";
+
+            } else if (
+                percentage >= 60
+            ) {
+
+                icon.textContent =
+                    "🧠";
+
+            } else if (
+                percentage >= 40
+            ) {
+
+                icon.textContent =
+                    "📚";
+
+            } else {
+
+                icon.textContent =
+                    "💡";
+            }
+        }
+
+
+        /* =====================================================
+           CONQUISTAS
+        ===================================================== */
+
+        function createAchievement(
+            percentage
+        ) {
+
+            const element =
+                document.getElementById(
+                    "achievement"
+                );
+
+
+            let title;
+
+            let description;
+
+
+            if (
+                percentage === 100
+            ) {
+
+                title =
+                    "🏆 Mestre da Inteligência Artificial";
+
+                description =
+                    "Você acertou todas as perguntas!";
+
+            } else if (
+                bestCombo >= 5
+            ) {
+
+                title =
+                    "🔥 Combo Master";
+
+                description =
+                    `Você conseguiu ${bestCombo} acertos consecutivos!`;
+
+            } else if (
+                percentage >= 80
+            ) {
+
+                title =
+                    "🚀 Especialista em formação";
+
+                description =
+                    "Seu conhecimento sobre IA está muito bom!";
+
+            } else if (
+                percentage >= 60
+            ) {
+
+                title =
+                    "🧠 Aprendiz de IA";
+
+                description =
+                    "Você já possui uma boa base.";
+
+            } else {
+
+                title =
+                    "📚 Primeiro passo";
+
+                description =
+                    "Continue estudando para desbloquear novas conquistas.";
+            }
+
+
+            element.innerHTML = `
+                <strong>${title}</strong>
+                <span>${description}</span>
+            `;
+        }
+
+
+        /* =====================================================
+           RANKING
+        ===================================================== */
+
+        function saveRanking(
+            name,
+            score,
+            percentage
+        ) {
+
+            let ranking =
+                JSON.parse(
+                    localStorage.getItem(
+                        "aiMasterRanking"
+                    )
+                ) || [];
+
+
+            ranking.push({
+                name,
+                score,
+                percentage
+            });
+
+
+            ranking.sort(
+                (a, b) =>
+                    b.score - a.score
+            );
+
+
+            ranking =
+                ranking.slice(
+                    0,
+                    10
+                );
+
+
+            localStorage.setItem(
+                "aiMasterRanking",
+                JSON.stringify(
+                    ranking
+                )
+            );
+        }
+
+
+        function showRanking() {
+
+            const ranking =
+                JSON.parse(
+                    localStorage.getItem(
+                        "aiMasterRanking"
+                    )
+                ) || [];
+
+
+            const rankingList =
+                document.getElementById(
+                    "rankingList"
+                );
+
+
+            rankingList.innerHTML = "";
+
+
+            if (
+                ranking.length === 0
+            ) {
+
+                rankingList.innerHTML =
+                    "<p>Nenhuma pontuação registrada.</p>";
+
+                return;
+            }
+
+
+            ranking.forEach(
+                (item, index) => {
+
+                    const div =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    div.className =
+                        "rank";
+
+
+                    div.innerHTML = `
+                        <span>
+                            ${index + 1}º
+                            ${escapeHTML(item.name)}
+                        </span>
+
+                        <span class="rank-score">
+                            ${item.score} pts
+                        </span>
+                    `;
+
+
+                    rankingList.appendChild(
+                        div
+                    );
+                }
+            );
+        }
+
+
+        /* =====================================================
+           REINICIAR
+        ===================================================== */
+
+        restartButton.addEventListener(
+            "click",
+            () => {
+
+                clearInterval(
+                    timerInterval
+                );
+
+
+                resultScreen.classList.remove(
+                    "active"
+                );
+
+
+                startScreen.classList.add(
+                    "active"
+                );
+            }
+        );
+
+
+        /* =====================================================
+           EMBARALHAR
+        ===================================================== */
+
+        function shuffle(array) {
+
+            for (
+                let i = array.length - 1;
+                i > 0;
+                i--
+            ) {
+
+                const j =
+                    Math.floor(
+                        Math.random() *
+                        (i + 1)
+                    );
+
+
+                [
+                    array[i],
+                    array[j]
+                ] =
+                [
+                    array[j],
+                    array[i]
+                ];
+            }
+
+
+            return array;
+        }
+
+
+        /* =====================================================
+           PROTEÇÃO DO RANKING
+        ===================================================== */
+
+        function escapeHTML(text) {
+
+            return String(text)
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+        }
+
+
+        /* =====================================================
+           MODO CLARO / ESCURO
+        ===================================================== */
+
+        const themeButton =
+            document.getElementById(
+                "themeButton"
+            );
+
+
+        let lightMode =
+            localStorage.getItem(
+                "aiMasterTheme"
+            ) === "light";
+
+
+        if (lightMode) {
+
+            document.body.classList.add(
+                "light"
+            );
+
+            themeButton.textContent =
+                "☀️";
+        }
+
+
+        themeButton.addEventListener(
+            "click",
+            () => {
+
+                lightMode =
+                    !lightMode;
+
+
+                document.body.classList.toggle(
+                    "light",
+                    lightMode
+                );
+
+
+                themeButton.textContent =
+                    lightMode
+                    ? "☀️"
+                    : "🌙";
+
+
+                localStorage.setItem(
+                    "aiMasterTheme",
+                    lightMode
+                    ? "light"
+                    : "dark"
+                );
+            }
+        );
+
+    </script>
+
+</body>
+</html>
